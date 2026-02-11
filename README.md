@@ -5,20 +5,56 @@ A lightweight Flask app that:
 2. Organizes downloaded files into date folders (`YYYY-MM-DD`).
 3. Creates an Instagram carousel draft payload (`.json`) and preview caption/order in the app.
 
-## Quick start
+## Step-by-step setup (first time)
+
+From any terminal, run these commands exactly:
 
 ```bash
+cd /workspace/Amaryllis
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-pip install gallery-dl pytest
 python app.py
 ```
 
-Open http://localhost:8000 and submit:
-- Pinterest board URL (`https://www.pinterest.com/<user>/<board>/`)
-- Output directory
-- Optional image limit
+Then open `http://localhost:8000`.
+
+### What to enter in the form
+
+- **Pinterest board URL**: `https://au.pinterest.com/limjxh/amaryllis_a/`
+- **Output directory**: `./output`
+- **Max images**: optional (leave blank for all)
+
+Click **Run pipeline**.
+
+## One-command startup option
+
+If you prefer, use the helper script:
+
+```bash
+cd /workspace/Amaryllis
+./run_local.sh
+```
+
+This script will:
+- create `.venv` if missing,
+- install/update dependencies,
+- start the Flask app on port 8000.
+
+## Daily use (after first setup)
+
+```bash
+cd /workspace/Amaryllis
+source .venv/bin/activate
+python app.py
+```
+
+Or just run:
+
+```bash
+cd /workspace/Amaryllis
+./run_local.sh
+```
 
 ## Output structure
 
@@ -33,9 +69,11 @@ output/
 ```
 
 ## Troubleshooting
-- If you see `gallery-dl is not installed`, run `pip install gallery-dl` inside your venv.
-- Private boards may require authenticated `gallery-dl` configuration.
+
+- If terminal says `No such file or directory: requirements.txt` or `app.py`, you are in the wrong folder. Run `cd /workspace/Amaryllis`.
+- If `gallery-dl` cannot access a private board, configure gallery-dl authentication.
 - This app creates local drafts only; posting to Instagram remains manual.
 
 ## Notes
+
 - Follow Pinterest and Instagram Terms of Service, API/platform rules, and applicable copyright/licensing requirements.
