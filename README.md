@@ -7,13 +7,46 @@ A lightweight Flask app that:
 
 ## Step-by-step setup (first time)
 
-From any terminal, run these commands exactly:
+### 1) Open a terminal and go to your project folder
+
+Use the folder where this repo exists on **your machine** (not `/workspace/Amaryllis`, which was only for my environment):
 
 ```bash
-cd /workspace/Amaryllis
+cd /path/to/Amaryllis
+```
+
+If you have not cloned the repo yet:
+
+```bash
+git clone <your-repo-url> Amaryllis
+cd Amaryllis
+```
+
+### 2) Confirm you're in the right folder
+
+```bash
+pwd
+ls
+```
+
+You should see `app.py`, `requirements.txt`, `src`, `templates`.
+
+### 3) Create and activate a virtual environment
+
+```bash
 python -m venv .venv
 source .venv/bin/activate
+```
+
+### 4) Install dependencies
+
+```bash
 pip install -r requirements.txt
+```
+
+### 5) Run the app
+
+```bash
 python app.py
 ```
 
@@ -29,10 +62,9 @@ Click **Run pipeline**.
 
 ## One-command startup option
 
-If you prefer, use the helper script:
+If you prefer, from inside the repo root run:
 
 ```bash
-cd /workspace/Amaryllis
 ./run_local.sh
 ```
 
@@ -44,7 +76,7 @@ This script will:
 ## Daily use (after first setup)
 
 ```bash
-cd /workspace/Amaryllis
+cd /path/to/Amaryllis
 source .venv/bin/activate
 python app.py
 ```
@@ -52,7 +84,7 @@ python app.py
 Or just run:
 
 ```bash
-cd /workspace/Amaryllis
+cd /path/to/Amaryllis
 ./run_local.sh
 ```
 
@@ -70,7 +102,7 @@ output/
 
 ## Troubleshooting
 
-- If terminal says `No such file or directory: requirements.txt` or `app.py`, you are in the wrong folder. Run `cd /workspace/Amaryllis`.
+- If terminal says `No such file or directory` for `requirements.txt` or `app.py`, you're not in the repo root. Run `pwd`, then `cd` into the folder that contains those files.
 - If `gallery-dl` cannot access a private board, configure gallery-dl authentication.
 - This app creates local drafts only; posting to Instagram remains manual.
 
