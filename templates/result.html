@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pipeline complete</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <main class="card">
+      <h1>Done 🎉</h1>
+      <p>Your files were organized and a draft payload was generated.</p>
+
+      <h2>Source board</h2>
+      <p><a href="{{ source }}" target="_blank" rel="noopener noreferrer">{{ source }}</a></p>
+
+      <h2>Draft file</h2>
+      <pre>{{ draft_path }}</pre>
+
+      <h2>Caption draft</h2>
+      <pre>{{ caption }}</pre>
+
+      <h2>Carousel image order</h2>
+      <ol>
+        {% for image in images %}
+          <li>{{ image }}</li>
+        {% endfor %}
+      </ol>
+
+      <a href="{{ url_for('index') }}">Run another board</a>
+    </main>
+  </body>
+</html>
