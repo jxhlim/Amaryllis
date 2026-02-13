@@ -35,3 +35,16 @@ Open: `http://localhost:8000`
 ```bash
 pytest
 ```
+
+## Download the changed files bundle
+
+To create a zip containing the files introduced/updated by the Excel Dependency Explorer work:
+
+```bash
+./scripts/download_changed_files.sh
+```
+
+This writes:
+
+- `dist/excel_dependency_explorer_changed_files.zip`
+
