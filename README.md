@@ -1,111 +1,50 @@
-# Pinterest Board → Instagram Carousel Draft Tool
+# Excel Dependency Explorer (Arixcel-style + Visual Graph)
 
-A lightweight Flask app that:
-1. Downloads images from a Pinterest board (via `gallery-dl`) in the highest available quality.
-2. Organizes downloaded files into date folders (`YYYY-MM-DD`).
-3. Creates an Instagram carousel draft payload (`.json`) and preview caption/order in the app.
+A lightweight Flask app to inspect **trace dependents** in Excel workbooks.
 
-## Step-by-step setup (first time)
+## What it does
 
-### 1) Open a terminal and go to your project folder
+1. Upload an `.xlsx` file.
+2. Enter a starting cell (`SheetName!A1`).
+3. Build a formula dependency index.
+4. Show recursive dependents as:
+   - a hierarchical tree,
+   - a flat dependent list,
+   - and an interactive node-link flow chart.
 
-Use the folder where this repo exists on **your machine** (not `/workspace/Amaryllis`, which was only for my environment):
-
-```bash
-cd /path/to/Amaryllis
-```
-
-If you have not cloned the repo yet:
-
-```bash
-git clone <your-repo-url> Amaryllis
-cd Amaryllis
-```
-
-### 2) Confirm you're in the right folder
-
-```bash
-pwd
-ls
-```
-
-You should see `app.py`, `requirements.txt`, `src`, `templates`.
-
-### 3) Create and activate a virtual environment
+## Quickstart
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-```
-
-### 4) Install dependencies
-
-```bash
 pip install -r requirements.txt
-```
-
-### 5) Run the app
-
-```bash
 python app.py
 ```
 
-Then open `http://localhost:8000`.
+Open: `http://localhost:8000`
 
-### What to enter in the form
+## Notes / current scope
 
-- **Pinterest board URL**: `https://au.pinterest.com/limjxh/amaryllis_a/`
-- **Output directory**: `./output`
-- **Max images**: optional (leave blank for all)
+- Supports common A1-style formula references and ranges.
+- Range references (`A1:A3`) are expanded into individual cells.
+- Sheet references like `Sheet2!B5` are supported.
+- Advanced constructs like `INDIRECT` and complex table references are not fully resolved.
 
-Click **Run pipeline**.
-
-## One-command startup option
-
-If you prefer, from inside the repo root run:
+## Run tests
 
 ```bash
-./run_local.sh
+pytest
 ```
 
-This script will:
-- create `.venv` if missing,
-- install/update dependencies,
-- start the Flask app on port 8000.
+## Download the changed files bundle
 
-## Daily use (after first setup)
+To create a zip containing the files introduced/updated by the Excel Dependency Explorer work:
 
 ```bash
-cd /path/to/Amaryllis
-source .venv/bin/activate
-python app.py
+./scripts/download_changed_files.sh
 ```
 
-Or just run:
+This writes:
 
-```bash
-cd /path/to/Amaryllis
-./run_local.sh
-```
+- `dist/excel_dependency_explorer_changed_files.zip`
 
-## Output structure
-
-```text
-output/
-  images_by_day/
-    2026-01-04/
-      image1.jpg
-      image2.jpg
-  drafts/
-    instagram_draft_YYYYMMDD_HHMMSS.json
-```
-
-## Troubleshooting
-
-- If terminal says `No such file or directory` for `requirements.txt` or `app.py`, you're not in the repo root. Run `pwd`, then `cd` into the folder that contains those files.
-- If `gallery-dl` cannot access a private board, configure gallery-dl authentication.
-- This app creates local drafts only; posting to Instagram remains manual.
-
-## Notes
-
-- Follow Pinterest and Instagram Terms of Service, API/platform rules, and applicable copyright/licensing requirements.

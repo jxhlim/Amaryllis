@@ -1,47 +1,36 @@
 from __future__ import annotations
 
-import json
-from pathlib import Path
-
-from src.validation import looks_like_pinterest_board
-from src.workflow import DayOrganizer, InstagramDraftBuilder
+from src.dependency_graph import DependencyGraph, extract_references, expand_range
 
 
-def test_day_organizer_uses_metadata_date(tmp_path: Path):
-    source = tmp_path / "staging"
-    source.mkdir()
-    image = source / "photo.jpg"
-    image.write_bytes(b"x")
-    metadata = source / "photo.json"
-    metadata.write_text(json.dumps({"date": "2026-01-04T10:00:00Z"}), encoding="utf-8")
-
-    organizer = DayOrganizer()
-    moved = organizer.organize([image], tmp_path / "out")
-
-    assert len(moved) == 1
-    assert "2026-01-04" in str(moved[0])
-    assert moved[0].exists()
+def test_expand_range_rectangular():
+    assert expand_range("A1", "B2") == ["A1", "A2", "B1", "B2"]
 
 
-def test_instagram_draft_builder_creates_json(tmp_path: Path):
-    image = tmp_path / "img.jpg"
-    image.write_bytes(b"x")
-
-    builder = InstagramDraftBuilder()
-    draft = builder.build_draft(
-        "https://www.pinterest.com/user/minimal-home-ideas/",
-        [image],
-        tmp_path / "drafts",
-    )
-
-    payload = json.loads(draft.draft_path.read_text(encoding="utf-8"))
-    assert payload["type"] == "carousel"
-    assert payload["status"] == "draft"
-    assert payload["image_paths"] == [str(image)]
-    assert "#instagram" in payload["caption"]
+def test_extract_references_with_sheet_and_range():
+    refs = extract_references("=SUM(A1:A2,Sheet2!B3)", "Sheet1")
+    assert refs == ["Sheet1!A1", "Sheet1!A2", "Sheet2!B3"]
 
 
-def test_pinterest_board_url_validation():
-    assert looks_like_pinterest_board("https://www.pinterest.com/someuser/home-decor/")
-    assert not looks_like_pinterest_board("https://example.com/not-pinterest")
-    assert not looks_like_pinterest_board("https://www.pinterest.com/justonepart")
+def test_dependency_graph_dependents_traversal():
+    formulas = {
+        "Sheet1!B1": "=A1+1",
+        "Sheet1!C1": "=B1+1",
+        "Sheet1!D1": "=B1+C1",
+    }
+    graph = DependencyGraph(formulas)
+
+    assert graph.dependents("Sheet1!A1") == ["Sheet1!B1", "Sheet1!C1", "Sheet1!D1"]
+
+
+def test_tree_includes_nested_children():
+    formulas = {
+        "Sheet1!B1": "=A1",
+        "Sheet1!C1": "=B1",
+    }
+    graph = DependencyGraph(formulas)
+    tree = graph.tree("Sheet1!A1", max_depth=3)
+
+    assert tree["cell"] == "Sheet1!A1"
+    assert tree["children"][0]["cell"] == "Sheet1!B1"
+    assert tree["children"][0]["children"][0]["cell"] == "Sheet1!C1"

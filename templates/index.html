@@ -3,42 +3,37 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pinterest → Instagram Carousel Drafts</title>
+    <title>Excel Dependency Explorer</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
   </head>
   <body>
     <main class="card">
-      <h1>Pinterest Board Automation</h1>
+      <h1>Excel Dependency Explorer</h1>
       <p>
-        Download HD images, organize files by day, and create an Instagram carousel draft JSON ready for review.
+        Upload an Excel file, pick a starting cell (<code>Sheet!A1</code>) and inspect all trace dependents
+        as a tree + interactive flow graph.
       </p>
 
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-          <div>
-            {% for category, message in messages %}
-              <div class="alert {{ category }}">{{ message }}</div>
-            {% endfor %}
-          </div>
+          {% for category, message in messages %}
+            <div class="alert {{ category }}">{{ message }}</div>
+          {% endfor %}
         {% endif %}
       {% endwith %}
 
-      <form action="{{ url_for('run_pipeline') }}" method="post">
-        <label for="board_url">Pinterest board URL</label>
-        <input id="board_url" name="board_url" placeholder="https://www.pinterest.com/<user>/<board>/" required />
+      <form action="{{ url_for('analyze') }}" method="post" enctype="multipart/form-data">
+        <label for="workbook">Workbook (.xlsx)</label>
+        <input id="workbook" name="workbook" type="file" accept=".xlsx" required />
 
-        <label for="output_dir">Output folder</label>
-        <input id="output_dir" name="output_dir" value="./output" />
+        <label for="start_cell">Start cell</label>
+        <input id="start_cell" name="start_cell" placeholder="Sheet1!B4" required />
 
-        <label for="max_images">Max images (optional)</label>
-        <input id="max_images" name="max_images" type="number" min="1" placeholder="e.g. 20" />
+        <label for="max_depth">Traversal depth</label>
+        <input id="max_depth" name="max_depth" type="number" min="1" max="12" value="4" />
 
-        <button type="submit">Run pipeline</button>
+        <button type="submit">Analyze Dependents</button>
       </form>
-
-      <small>
-        Tip: Pinterest and Instagram policies apply. Use only content you are allowed to download and publish.
-      </small>
     </main>
   </body>
 </html>

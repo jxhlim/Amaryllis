@@ -3,31 +3,65 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pipeline complete</title>
+    <title>Dependency Results</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    <script src="https://unpkg.com/cytoscape@3.30.2/dist/cytoscape.min.js"></script>
   </head>
   <body>
-    <main class="card">
-      <h1>Done 🎉</h1>
-      <p>Your files were organized and a draft payload was generated.</p>
+    {% macro render_tree(node) -%}
+      <li>
+        <span class="tree-cell">{{ node.cell }}</span>
+        {% if node.children %}
+          <ul>
+            {% for child in node.children %}
+              {{ render_tree(child) }}
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </li>
+    {%- endmacro %}
 
-      <h2>Source board</h2>
-      <p><a href="{{ source }}" target="_blank" rel="noopener noreferrer">{{ source }}</a></p>
+    <main class="card wide">
+      <h1>Dependency Explorer</h1>
+      <p><strong>Start:</strong> {{ start_cell }} · <strong>Formula cells indexed:</strong> {{ formulas_count }}</p>
 
-      <h2>Draft file</h2>
-      <pre>{{ draft_path }}</pre>
+      <section class="grid">
+        <div>
+          <h2>Dependent tree</h2>
+          <ul class="tree-root">
+            {{ render_tree(tree) }}
+          </ul>
 
-      <h2>Caption draft</h2>
-      <pre>{{ caption }}</pre>
+          <h3>Flat list</h3>
+          <ol>
+            {% for item in dependents %}
+              <li><code>{{ item }}</code></li>
+            {% else %}
+              <li>No dependents found at this depth.</li>
+            {% endfor %}
+          </ol>
+        </div>
 
-      <h2>Carousel image order</h2>
-      <ol>
-        {% for image in images %}
-          <li>{{ image }}</li>
-        {% endfor %}
-      </ol>
+        <div>
+          <h2>Flow chart</h2>
+          <div id="graph"></div>
+        </div>
+      </section>
 
-      <a href="{{ url_for('index') }}">Run another board</a>
+      <a href="{{ url_for('index') }}">Analyze another file</a>
     </main>
+
+    <script>
+      const elements = [...{{ nodes_json|safe }}, ...{{ edges_json|safe }}];
+      cytoscape({
+        container: document.getElementById('graph'),
+        elements,
+        style: [
+          { selector: 'node', style: { 'background-color': '#2563eb', label: 'data(label)', color: '#111827', 'font-size': '10px', 'text-wrap': 'wrap', 'text-max-width': 140 } },
+          { selector: 'edge', style: { width: 2, 'line-color': '#9ca3af', 'target-arrow-shape': 'triangle', 'target-arrow-color': '#9ca3af', 'curve-style': 'bezier' } }
+        ],
+        layout: { name: 'breadthfirst', directed: true, spacingFactor: 1.1 }
+      });
+    </script>
   </body>
 </html>
